@@ -6,6 +6,9 @@ from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from netCDF4 import Dataset
 
+
+#/work1/umbrella0c/taiesm_work/archive/f09.F2000.ESMclass.EAstrat/atm/hist/f09.F2000.ESMclass.EAstrat.cam.h1.0001-01-11-00000.nc
+#f09.F2000.ESMclass.EAstrat.cam.h1.0001-01-05-00000.nc
 casename = 'f09_B1850TAI_BC2000'
 dpath = f'/work1/umbrella0c/taiesm_work/archive/{casename}/atm/'
 stime = datetime(1,1,1,0)
