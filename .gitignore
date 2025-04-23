@@ -2,3 +2,5 @@
 ./data
 *.pyc
 *.nc
+*.gif
+*.mp4

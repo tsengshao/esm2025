@@ -10,7 +10,7 @@ from netCDF4 import Dataset
 #/work1/umbrella0c/taiesm_work/archive/f09.F2000.ESMclass.EAstrat/atm/hist/f09.F2000.ESMclass.EAstrat.cam.h1.0001-01-11-00000.nc
 #f09.F2000.ESMclass.EAstrat.cam.h1.0001-01-05-00000.nc
 
-
+##################
 casename = 'f09.F2000.ESMclass.ice_future'
 casename = 'f09.F2000.ESMclass.ice_preindustrial'
 stime = datetime(1,4,1,0)
@@ -22,6 +22,7 @@ fmt_ctl = '%y4-%m2'
 fmt_tstr = '%m'
 nt_ctl   = nfile
 
+##################
 casename='f09.F2000.ESMclass.EAstrat'
 stime = datetime(1,1,1,0)
 nfile   = 11
@@ -32,6 +33,17 @@ fmt_ctl = '%y4-%m2-%d2-00000'
 fmt_tstr = '%m-%d-00000'
 nt_ctl   = nfile*24
 
+##################
+stime = datetime(2017,9,11,0)
+casename='hind'+stime.strftime('%Y%m%d')
+nfile   = 6
+dt_ctl  = '1dy'
+dfile_time = relativedelta(days=1)
+htype   = 'h1'
+fmt_ctl = '%y4-%m2-%d2-00000'
+fmt_tstr = '%m-%d-00000'
+nt_ctl   = nfile
+
 dpath = f'/work1/umbrella0c/taiesm_work/archive/{casename}/atm/'
 outpath = f'{dpath}/pres/'
 os.makedirs(f'{outpath}', exist_ok=True)
@@ -39,7 +51,7 @@ os.makedirs(f'{outpath}', exist_ok=True)
 ctl=f"""
 dset ^pres/{casename}.cam.{htype}.{fmt_ctl}.nc
 options template 365_day_calendar
-tdef time  {nt_ctl} linear 01{stime.strftime('%b')}{stime.year:04d} {dt_ctl}
+tdef time  {nt_ctl} linear {stime.day:02d}{stime.strftime('%b')}{stime.year:04d} {dt_ctl}
 """
 fout = open(f'{dpath}/pres_{htype}.ctl','w')
 fout.write(ctl)
