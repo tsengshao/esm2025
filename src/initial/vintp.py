@@ -11,12 +11,13 @@ def vintp(var, pres1d, plevs):
         for j in range(s[2]):
             for i in range(s[3]):
                 out[t,:,j,i] = np.interp(plevs[t,:,j,i], pres1d, var[t,:,j,i])
-                out[t,:,j,i] = np.where(plevs[t,:,j,i] > pres1d[-1], np.nan, out[t,:,j,i])
+                #out[t,:,j,i] = np.where(plevs[t,:,j,i] > pres1d[-1], np.nan, out[t,:,j,i])
     return out
 
 ## python vintp.py daily f02 2016080507 "/data/C.shaoyu/ESM2025/src/initial/ref_file" "./initial" 
 ## python vintp.py hourly f02 2016080507 "./ref_file" "/home/umbrella0c/data_wt/taiesm_initial"
 print(sys.argv)
+## python vintp.py hourly f02 2016080100 "./ref_file" "../../data/taiesm_initial"
 dataset    = sys.argv[1] #daily, hourly
 res        = sys.argv[2] #f09, f02
 yyyymmddhh = sys.argv[3] #yyyymmddhh, 2016080100

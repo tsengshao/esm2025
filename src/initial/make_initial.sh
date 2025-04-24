@@ -146,7 +146,6 @@ while [ "$now_ts" -lt "$end_ts" ] || \
     ls -l ${outfilelist}
 
     python  vintp.py ${dataset} ${res} ${yyyymmddhh} ${refpath} ${outpath}
-    
 
     rm -rf ${outfilelist}
 done
