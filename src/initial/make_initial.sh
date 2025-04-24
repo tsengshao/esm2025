@@ -1,17 +1,29 @@
 #!/usr/bin/bash
 
+__conda_setup="$('/home/umbrella0c/miniconda3/bin/conda' 'shell.bash' 'hook' 2> /dev/null)"
+eval "$__conda_setup"
+conda activate taiesm
+
+
 #===============================
 # Choose dataset: "hourly" or "daily"
 # Choose resolution: "f02" or "f09"
-dataset="daily"
-#dataset="hourly"
+dataset="hourly"
 res="f02" 
 
 # Set path based on dataset
-refpath="/data/C.shaoyu/ESM2025/src/initial/ref_file"
-#outpath="/data/C.shaoyu/ESM2025/data/initial"
-outpath="./initial"
-mkdir -p ${outpath}
+#refpath="/home/umbrella0c/ESM2025/src/initial/ref_file"
+#outpath="/home/umbrella0c/data_wt/taiesm_initial"
+#hourlypath="/data/C.shaoyu/data/era5/cwbgfs_hourly"
+hourlypath="/home/umbrella0c/data/cwbgfs_hourly"
+dailypath="/data/dadm1/reanalysis/ERA5"
+
+refpath="./ref_file"
+outpath="../../data/taiesm_initial"
+tmppath="${outpath}/processing"
+hourlypath="../../data_raw/cwbgfs_hourly"
+dailypath="../../data_raw/ERA5"
+mkdir -p ${tmppath}
 
 #===============================
 # Define remap files by resolution
@@ -44,8 +56,6 @@ func_get_input_path() {
     local varn=${2}
     local yyyymmddhh=${3} #yyyymmddhh
     read yr mo dy hr <<< $(func_extract_yyyymmddhh ${yyyymmddhh})
-    hourlypath="/data/C.shaoyu/data/era5/cwbgfs_hourly"
-    dailypath="/data/dadm1/reanalysis/ERA5"
 
     # process era5 daily data
     if [ "$dtype" == "daily" ]; then
@@ -83,8 +93,8 @@ remap() {
 }
 
 #===============================
-start_ts=$( date -u -d '2016-08-05 00:00:00' +%s )
-end_ts=$( date -u -d '2016-08-06 00:00:00' +%s )
+start_ts=$( date -u -d '2016-08-01 00:00:00' +%s )
+end_ts=$( date -u -d '2016-11-01 00:00:00' +%s )
 now_ts="${start_ts}"
 delta_ts=86400 #[second]
 
@@ -107,7 +117,7 @@ while [ "$now_ts" -lt "$end_ts" ] || \
     outfilelist=""
     # --- process regrid staggered lat
     for varn in u sp; do
-        outfile=${outpath}/ERA5_${res}_${varn}slat_${yyyymmddhh}_${dataset}.nc
+        outfile=${tmppath}/ERA5_${res}_${varn}slat_${yyyymmddhh}_${dataset}.nc
         remap $(func_get_input_path ${dataset} ${varn} ${yyyymmddhh}) \
               ${outfile} ${latgrid} ${con_lat} ${varn} ${tstep} &
         outfilelist="${outfilelist} ${outfile}"
@@ -116,7 +126,7 @@ while [ "$now_ts" -lt "$end_ts" ] || \
 
     # --- process regrid staggered lon
     for varn in v sp; do
-        outfile=${outpath}/ERA5_${res}_${varn}slon_${yyyymmddhh}_${dataset}.nc
+        outfile=${tmppath}/ERA5_${res}_${varn}slon_${yyyymmddhh}_${dataset}.nc
         remap $(func_get_input_path ${dataset} ${varn} ${yyyymmddhh}) \
               ${outfile} ${longrid} ${con_lon} ${varn} ${tstep} &
         outfilelist="${outfilelist} ${outfile}"
@@ -125,7 +135,7 @@ while [ "$now_ts" -lt "$end_ts" ] || \
 
     # --- process regrid center
     for varn in t q sp; do
-        outfile=${outpath}/ERA5_${res}_${varn}_${yyyymmddhh}_${dataset}.nc
+        outfile=${tmppath}/ERA5_${res}_${varn}_${yyyymmddhh}_${dataset}.nc
         remap $(func_get_input_path ${dataset} ${varn} ${yyyymmddhh}) \
               ${outfile} ${fullgrid} ${con_full} ${varn} ${tstep} &
         outfilelist="${outfilelist} ${outfile}"
@@ -134,7 +144,11 @@ while [ "$now_ts" -lt "$end_ts" ] || \
       
     now_ts=$(( now_ts + delta_ts))
     ls -l ${outfilelist}
-    exit
+
+    python  vintp.py ${dataset} ${res} ${yyyymmddhh} ${refpath} ${outpath}
+    
+
+    rm -rf ${outfilelist}
 done
 
 ##     #===============================
