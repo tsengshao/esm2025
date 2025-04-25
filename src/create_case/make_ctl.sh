@@ -36,7 +36,7 @@ export archive="/work1/umbrella0c/taiesm_work/archive/"
 res='f02'
 compset='F2000'
 start_ts=$( date -u -d '2016-08-01 00:00:00' +%s )
-end_ts=$( date -u -d '2016-08-01 00:00:00' +%s )
+end_ts=$( date -u -d '2016-08-02 00:00:00' +%s )
 now_ts="${start_ts}"
 delta_ts=86400 #[second]
 
@@ -60,11 +60,10 @@ while [ "$now_ts" -lt "$end_ts" ] || \
     " > ${fname}
     
     # ====== ctl file ======
-    # f02.F2000.hindcast_2016080100.cam.h1.2016-08-03-00000.nc
     fname="${archive}/${casename}/atm/hist_h2.ctl"
     MON=$(func_mo2MON ${mo})
     echo "
-    dset ^hist/${casename}.cam.h1.%y4-%m2-%d2-00000.nc
+    dset ^hist/${casename}.cam.h2.%y4-%m2-%d2-00000.nc
     options template 365_day_calendar
     tdef time  289  linear 00Z${dy}${MON}${yr} 1hr
     " > ${fname}

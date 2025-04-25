@@ -47,7 +47,7 @@ func_mo2MON() {
 
 res='f02'
 compset='F2000'
-start_ts=$( date -u -d '2016-08-02 00:00:00' +%s )
+start_ts=$( date -u -d '2016-08-01 00:00:00' +%s )
 end_ts=$( date -u -d '2016-11-01 00:00:00' +%s )
 now_ts="${start_ts}"
 delta_ts=86400 #[second]
@@ -104,8 +104,7 @@ while [ "$now_ts" -lt "$end_ts" ] || \
     ./xmlchange REST_OPTION=never
 
     # ---- cp source code -----
-    cp /work1/umbrella0c/taiesm/src/create_case/cam_diagnostics.F90
- ./SourceMods/src.cam/
+    cp /work1/umbrella0c/taiesm/src/create_case/cam_diagnostics.F90 ./SourceMods/src.cam/
     
     echo "
     avgflag_pertape =   'A',   'I', 'A'

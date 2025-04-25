@@ -1,0 +1,11 @@
+See if script running:
+    ps -fp $(<auto_rsync_loop.pid)
+Tail the script output:
+    tail -f loop.log
+Stop it gracefully:
+    kill $(<auto_rsync_loop.pid)
+Force-kill (rarely needed):
+    kill -9 $(<auto_rsync_loop.pid)
+Start again:
+    repeat the nohup 
+
