@@ -39,5 +39,5 @@ echo $$ > "$PIDFILE"        # <-- record our pid
 while true; do
     echo "$(date '+%F %T') auto_submit.sh"
     eval "$SCRIPT_DIR/auto_submit.sh"          # your main one-shot script
-    sleep 1h
+    sleep 2h
 done
