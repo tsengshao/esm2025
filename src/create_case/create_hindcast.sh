@@ -47,7 +47,7 @@ func_mo2MON() {
 
 res='f02'
 compset='F2000'
-start_ts=$( date -u -d '2016-08-01 00:00:00' +%s )
+start_ts=$( date -u -d '2016-08-02 00:00:00' +%s )
 end_ts=$( date -u -d '2016-11-01 00:00:00' +%s )
 now_ts="${start_ts}"
 delta_ts=86400 #[second]
@@ -57,7 +57,7 @@ while [ "$now_ts" -lt "$end_ts" ] || \
     yyyymmddhh=$(date -u -d @$now_ts +'%Y%m%d%H')
     read yr mo dy hr <<< $(func_extract_yyyymmddhh ${yyyymmddhh})
     ## casename="${res}.${compset}.hindcast_${yr}${mo}${dy}${hr}"
-    casename="${res}.${compset}.hindcast_${yr}${mo}${dy}${hr}"
+    casename="${res}.${compset}.hindcast_SSTp3k_${yr}${mo}${dy}${hr}"
      
     echo "------------"
     echo "create ${casename}"
@@ -88,11 +88,15 @@ while [ "$now_ts" -lt "$end_ts" ] || \
 
     # ------ 
     # -- change the model setting and inital condiction ------
+    # sst file : /work1/j07hcl00/inidata/OISST_BC/sst_OISST-V2_bc_0.23x0.31_20150101-20250101_c250401.nc
+    # sst p3k file :/work1/umbrella0c/taiesm_initial/sst_p3k_OISST-V2_bc_0.23x0.31_20150101-20250101_c250401.nc
     # ------ 
     # ---- env_run.xml // sst, simulation day
     tstr="${yr}-${mo}-${dy}"
     ./xmlchange RUN_STARTDATE=$tstr,RUN_REFDATE=$tstr
-    ./xmlchange SSTICE_DATA_FILENAME=/work1/j07hcl00/inidata/OISST_BC/sst_OISST-V2_bc_0.23x0.31_20150101-20250101_c250401.nc,SSTICE_YEAR_ALIGN=${yr},SSTICE_YEAR_START=2015,SSTICE_YEAR_END=2025
+    #./xmlchange SSTICE_DATA_FILENAME=/work1/j07hcl00/inidata/OISST_BC/sst_OISST-V2_bc_0.23x0.31_20150101-20250101_c250401.nc
+    ./xmlchange SSTICE_DATA_FILENAME=/work1/umbrella0c/taiesm_initial/sst_p3k_OISST-V2_bc_0.23x0.31_20150101-20250101_c250401.nc
+    ./xmlchange SSTICE_YEAR_ALIGN=${yr},SSTICE_YEAR_START=2015,SSTICE_YEAR_END=2025
     ./xmlchange STOP_OPTION=nday,STOP_N=12
 
     # ---- env_run.xml // open pnetcdf output

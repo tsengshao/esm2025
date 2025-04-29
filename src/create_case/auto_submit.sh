@@ -28,7 +28,7 @@ timestamp() { date '+%F %T'; }
 kbytes_free () {
     # quota – used, in bytes
     mmlsquota -u "$USER" --block-size K "$FS" |
-        awk '$2=="USR"{print 1500000000 - $3}'
+        awk '$2=="USR"{print 2500000000 - $3}'
         #awk '$2=="USR"{print $4 - $3}'
 }
 
