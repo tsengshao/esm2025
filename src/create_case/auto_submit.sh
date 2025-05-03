@@ -10,7 +10,7 @@ set -euo pipefail
 # --------- user-tunable variables ----------------------------------
 USER=umbrella0c
 FS=work1                                   # GPFS filesystem
-CASE_PATTERN="f02.F2000.hindcast_*"        # case dirs to scan
+CASE_PATTERN="f02.F2000.hindcast_SSTp3k_*"        # case dirs to scan
 JOB_CMD="./*.submit"                       # <-- SLURM submission cmd
 JOB_SIZE_GB=${JOB_SIZE_GB:-200}            # 1 job ≙ this many GiB
 MAX_PER_RUN=3                              # cap submissions / run
@@ -28,8 +28,8 @@ timestamp() { date '+%F %T'; }
 kbytes_free () {
     # quota – used, in bytes
     mmlsquota -u "$USER" --block-size K "$FS" |
-        awk '$2=="USR"{print 2500000000 - $3}'
-        #awk '$2=="USR"{print $4 - $3}'
+        #awk '$2=="USR"{print 2500000000 - $3}'
+        awk '$2=="USR"{print $4 - $3}'
 }
 
 queue_used () {
@@ -57,7 +57,7 @@ SLOTS=$slots_by_quota
 
 
 if (( SLOTS <= 0 )); then
-    echo "$(timestamp)  HALT  pfree=$(gi $PFREE)  queue=$CURRENT_QUEUE/$MAX_IN_QUEUE" >> "$LOG"
+    echo "$(timestamp)  HALT  pfree=$(gi $PFREE)  queue=$CURRENT_QUEUE/$MAX_IN_QUEUE MAX_PER_RUN=$MAX_PER_RUN" >> "$LOG"
     echo "Nothing to submit: quota or queue limit reached."
     echo "$(timestamp) ---- script end ----" >> "$LOG"
     exit 0

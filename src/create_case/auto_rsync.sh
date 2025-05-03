@@ -7,8 +7,8 @@ set -euo pipefail
 # --- BASIC SETTINGS ----------------------------------------------------------
 RUNDIR=$(cd "$(dirname "$0")" && pwd)          # folder that holds this script
 ARCHIVE="${RUNDIR}/archive"                    # where the cases live
-CASE_HEADER='f02.F2000.hindcast_'              # pattern of case directories
-#CASE_HEADER='f02.F2000.hindcast_SSTp3k_'              # pattern of case directories
+#CASE_HEADER='f02.F2000.hindcast_'              # pattern of case directories
+CASE_HEADER='f02.F2000.hindcast_SSTp3k_'              # pattern of case directories
 #REMOTE="39:/data/C.shaoyu/taiesm/archive" # change user/host as needed
 REMOTE="tw3:~/data_wt/archive"            # change user/host as needed
 

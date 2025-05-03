@@ -1053,7 +1053,7 @@ end subroutine diag_conv_tend_ini
        call outfld('V300    ', p_surf, pcols, lchnk )
     end if
     if (hist_fld_active('U300')) then
-       call vertinterp(ncol, pcols, pver, state%pmid, 30000._r8, state%v, p_surf)
+       call vertinterp(ncol, pcols, pver, state%pmid, 30000._r8, state%u, p_surf)
        call outfld('U300    ', p_surf, pcols, lchnk )
     end if
 
