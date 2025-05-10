@@ -32,11 +32,14 @@ func_mo2MON() {
 }
 
 # ====== Function End ======
-export archive="/work1/umbrella0c/taiesm_work/archive/"
+#export archive="/work1/umbrella0c/taiesm_work/archive/"
+export archive="/data/C.shaoyu/TaiESM/archive/"
+case_header='hindcast_SSTp3k'
+#case_header='hindcast'
 res='f02'
 compset='F2000'
 start_ts=$( date -u -d '2016-08-01 00:00:00' +%s )
-end_ts=$( date -u -d '2016-08-02 00:00:00' +%s )
+end_ts=$( date -u -d '2016-11-01 00:00:00' +%s )
 now_ts="${start_ts}"
 delta_ts=86400 #[second]
 
@@ -44,8 +47,9 @@ while [ "$now_ts" -lt "$end_ts" ] || \
       [ "$now_ts" -eq "$end_ts" ]; do
     yyyymmddhh=$(date -u -d @$now_ts +'%Y%m%d%H')
     read yr mo dy hr <<< $(func_extract_yyyymmddhh ${yyyymmddhh})
+    echo ${yr}${mo}${dy}${hr}
     ## casename="${res}.${compset}.hindcast_${yr}${mo}${dy}${hr}"
-    casename="${res}.${compset}.hindcast_${yr}${mo}${dy}${hr}"
+    casename="${res}.${compset}.${case_header}_${yr}${mo}${dy}${hr}"
 
     echo "CTL ... ${casename} ... creating"
 
@@ -70,6 +74,7 @@ while [ "$now_ts" -lt "$end_ts" ] || \
 
     now_ts=$(( ${now_ts} + ${delta_ts} ))
 done 
+
 
 
 
