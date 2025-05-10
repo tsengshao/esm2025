@@ -10,10 +10,10 @@ set -euo pipefail
 # --------- user-tunable variables ----------------------------------
 USER=umbrella0c
 FS=work1                                   # GPFS filesystem
-CASE_PATTERN="f02.F2000.hindcast_SSTp3k_*"        # case dirs to scan
+CASE_PATTERN="f02.F2000.hindcast_*"        # case dirs to scan
 JOB_CMD="./*.submit"                       # <-- SLURM submission cmd
 JOB_SIZE_GB=${JOB_SIZE_GB:-200}            # 1 job ≙ this many GiB
-MAX_PER_RUN=3                              # cap submissions / run
+MAX_PER_RUN=2                              # cap submissions / run
 MAX_IN_QUEUE=5                             # cap total squeue jobs
 LOG=autolog.submit
 # -------------------------------------------------------------------
