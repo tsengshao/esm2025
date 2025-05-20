@@ -30,10 +30,10 @@ esm   =  utaiesm.TaiESMRetriever(fdir, exp, reg, iens=0)
 for it in range(nt):
     nowtime = stime+timedelta(hours=it)
     print(it, nowtime)
-    ihr = int((nowtime-datetime(nowtime.year, nowtime.month, nowtime.day)).total_seconds()/3600)
     tseries_esm,  data_u = esm.get_data(nt=1, var='U850', mean=None, stime=nowtime)
     tseries_esm,  data_v = esm.get_data(nt=1, var='V850', mean=None, stime=nowtime)
     tseries_esm,  data_pr = esm.get_data(nt=1, var='PRECT', mean=None, stime=nowtime)
+    data_pr *= 3600.
 
     # read data
     dx = (esm.LON[1] - esm.LON[0])*111000.
