@@ -4,3 +4,5 @@
 *.nc
 *.gif
 *.mp4
+*.HDF5
+*.nc
