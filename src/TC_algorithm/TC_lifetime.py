@@ -4,6 +4,7 @@ import numba
 from itertools import groupby, chain
 from time import ctime
 from utils import load_config
+import sys, os
 
 def get_sections(fil):
     with open(fil) as f:
@@ -80,9 +81,13 @@ def main(case, sstfils, path):
         )
     )
     TC.to_netcdf(f'{path}/TC.nc')
-    with open(case+'.TC.txt', 'w') as f:
+    os.system('! mkdir -p ./tclog')
+    with open('./tclog/'+case+'.TC.txt', 'w') as f:
         f.write('Total TCs = '+str(nTC)+'\n')
-        f.write('Life-Time average = '+str(life_all/nTC))
+        if nTC>0:
+            f.write('Life-Time average = '+str(life_all/nTC))
+        else:
+            f.write('Life-Time average = -1')
     return
 
 if __name__ == "__main__":

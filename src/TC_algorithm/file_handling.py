@@ -13,27 +13,44 @@ def process_vorticity(h0, pres, path, casename):
         vortnc.close()
     else:
         print('calculate vorticity...')
-        k = first_nonzero(pres>=85000., axis=1)
-        k1 = k.min() - 1
-        if k1 < 0:
-            k1 = 0
-        k2 = k.max() + 1
-        if k2 > len(h0.lev) - 1:
-            k2 = len(h0.lev) - 1
-        reverse_lat = h0.lat[-1].values > h0.lat[0].values
-        vort = np.zeros(h0.U[:,k1:k2,:,:].shape)
-        for k in range(k1, k2):
-            utemp = h0.U[:,k,:,:].squeeze().transpose('lat','lon','time').values
-            vtemp = h0.V[:,k,:,:].squeeze().transpose('lat','lon','time').values
-            if reverse_lat:
-                utemp = utemp[-1::-1,:,:]
-                vtemp = vtemp[-1::-1,:,:]
-            w = VectorWind(utemp, vtemp)
-            vorttemp = w.vorticity().transpose((2,0,1))
-            if reverse_lat:
-                vorttemp = vorttemp[:,-1::-1,:]
-            vort[:,k-k1,:,:] = vorttemp
-        vort850 = vintp(vort, pres[:,k1:k2,:,:].values, np.array([85000.])).squeeze() 
+        # k = first_nonzero(pres>=85000., axis=1)
+        # k1 = k.min() - 1
+        # if k1 < 0:
+        #     k1 = 0
+        # k2 = k.max() + 1
+        # if k2 > len(h0.lev) - 1:
+        #     k2 = len(h0.lev) - 1
+        # reverse_lat = h0.lat[-1].values > h0.lat[0].values
+        # vort = np.zeros(h0.U[:,k1:k2,:,:].shape)
+        # for k in range(k1, k2):
+        #     utemp = h0.U[:,k,:,:].squeeze().transpose('lat','lon','time').values
+        #     vtemp = h0.V[:,k,:,:].squeeze().transpose('lat','lon','time').values
+        #     if reverse_lat:
+        #         utemp = utemp[-1::-1,:,:]
+        #         vtemp = vtemp[-1::-1,:,:]
+        #     w = VectorWind(utemp, vtemp)
+        #     vorttemp = w.vorticity().transpose((2,0,1))
+        #     if reverse_lat:
+        #         vorttemp = vorttemp[:,-1::-1,:]
+        #     vort[:,k-k1,:,:] = vorttemp
+        # vort850 = vintp(vort, pres[:,k1:k2,:,:].values, np.array([85000.])).squeeze() 
+
+        u850 = h0.U850.values
+        v850 = h0.V850.values
+        w = VectorWind(u850, v850)
+        vort850 = w.vorticity()
+
+ 
+        # # read data
+        # lon = h0.lon.values
+        # lat = h0.lat.values
+        # dx = (lon[1] - lon[0])*111000.
+        # dy = (lat[1] - lat[0])*111000.
+        # weight = np.cos(lat[:,np.newaxis]*np.pi/180.)
+        # data_vort = np.gradient(v850,axis=1)/dx - np.gradient(u850,axis=0)/dy
+        # vort850 = data_vort*weight
+    
+
         vort = xr.DataArray(
             data=vort850,
             dims=['time', 'lat', 'lon'],
@@ -56,6 +73,12 @@ def process_uv300(h0, pres, path, casename):
     if os.path.isfile(uv300file):
         print('open UV300 file')
         uv300 = xr.open_dataset(uv300file, chunks={})
+        u300 = uv300.U300
+        v300 = uv300.V300
+        uv300.close()
+    elif np.all(np.isin(['U300','V300'], list(h0.keys()))):
+        u300 = h0.U300
+        v300 = h0.V300
     else:
         print('calculate U300, V300...')
         u300 = vintp(h0.U.values, pres.values, np.array([30000.])).squeeze()
@@ -74,9 +97,9 @@ def process_uv300(h0, pres, path, casename):
         uv300['U300'] = uv300.U300.assign_attrs(h0.U.attrs)
         uv300['V300'] = uv300.V300.assign_attrs(h0.V.attrs)
         uv300.to_netcdf(uv300file)
-    u300 = uv300.U300
-    v300 = uv300.V300
-    uv300.close()
+        u300 = uv300.U300
+        v300 = uv300.V300
+        uv300.close()
     return u300, v300
 
 def process_uv850(h0, pres, path, casename):

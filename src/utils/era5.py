@@ -17,6 +17,7 @@ class Era5Retriever:
     # value : list(type, fname_with_time_fmt, varname, )
     vard = {\
             'cwv':['sl', 'ERA5_cwv_%Y%m%d.nc', 'tcwv'],\
+            'mslp':['mslp', 'ERA5_mslp_%Y%m.nc', 'msl'],\
             'u':  ['pl', 'ERA5_pressure_essentials_%Y%m%d%H.nc', 'u'],\
             'v':  ['pl', 'ERA5_pressure_essentials_%Y%m%d%H.nc', 'v'],\
             't':  ['pl', 'ERA5_pressure_essentials_%Y%m%d%H.nc', 't'],\
@@ -66,8 +67,10 @@ class Era5Retriever:
 
     if '%Y%m%d%H' in self.VARD[varn][1]:
         it = 0
-    else:
+    elif '%Y%m%d' in self.VARD[varn][1]:
         it = int((nowtime - datetime.strptime(yyyymmdd,'%Y%m%d')).total_seconds() / 3600)
+    elif '%Y%m' in self.VARD[varn][1]:
+        it = int((nowtime - datetime(nowtime.year, nowtime.month, 1)).total_seconds() / 3600)
     nc = Dataset(fname, 'r')
     var = nc.variables[self.VARD[varn][2]][it]
     nc.close()
@@ -130,6 +133,8 @@ if __name__=='__main__':
   stime = datetime(2016,8,1,0,0)
   reg   = [90, 180, -10, 45, 1000., 100.]
   era5 = Era5Retriever(fdir, stime, reg)
+
+  sys.exit()
 
   ########
   # get u / 1hr

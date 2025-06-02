@@ -94,7 +94,7 @@ def main(casename, inpath, outpath, file_pattern):
     return ds
 
 if __name__ == "__main__":
-    config = load_config()
+    config = load_config(config_path='config_sstp3k.yaml')
     cases = config['cases']
     case_path = config['case_path']
     output_path = config['output_path']
