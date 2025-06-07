@@ -35,11 +35,17 @@ def process_vorticity(h0, pres, path, casename):
         #     vort[:,k-k1,:,:] = vorttemp
         # vort850 = vintp(vort, pres[:,k1:k2,:,:].values, np.array([85000.])).squeeze() 
 
-        u850 = h0.U850.values
-        v850 = h0.V850.values
-        w = VectorWind(u850, v850)
-        vort850 = w.vorticity()
-
+        u850 = h0.U850.transpose('lat','lon','time').values
+        v850 = h0.V850.transpose('lat','lon','time').values
+        reverse_lat = h0.lat[-1].values > h0.lat[0].values
+        if reverse_lat:
+            utemp = u850[-1::-1,:,:]
+            vtemp = v850[-1::-1,:,:]
+        w = VectorWind(utemp, vtemp)
+        vorttemp = w.vorticity().transpose((2,0,1))
+        if reverse_lat:
+            vorttemp = vorttemp[:,-1::-1,:]
+        vort850 = vorttemp.copy()
  
         # # read data
         # lon = h0.lon.values
@@ -49,7 +55,6 @@ def process_vorticity(h0, pres, path, casename):
         # weight = np.cos(lat[:,np.newaxis]*np.pi/180.)
         # data_vort = np.gradient(v850,axis=1)/dx - np.gradient(u850,axis=0)/dy
         # vort850 = data_vort*weight
-    
 
         vort = xr.DataArray(
             data=vort850,

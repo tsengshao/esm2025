@@ -124,11 +124,12 @@ while [ "$now_ts" -lt "$end_ts" ] || \
     outfilelist=""
     # --- process regrid center
     #for varn in u v t q sp; do
-    for varn in mslp cwv; do
+    for varn in mslp; do
         if [ $varn == "mslp" ]; then vname='msl'; fi
         if [ $varn == "cwv" ];  then vname='tp'; fi
         echo ${yr}-${mo}-${dy} ${hr} ${tstep} ${varn}
         outfile=${tmppath}/ERA5_${res}_${varn}_${yyyymmddhh}_${dataset}.nc
+        if [ -f ${outfile} ]; then continue; fi
         remap $(func_get_input_path ${dataset} ${varn} ${yyyymmddhh}) \
               ${outfile} ${fullgrid} ${con_full} ${vname} ${tstep} &
         outfilelist="${outfilelist} ${outfile}"
@@ -136,7 +137,7 @@ while [ "$now_ts" -lt "$end_ts" ] || \
     wait
       
     now_ts=$(( now_ts + delta_ts))
-    ls -l ${outfilelist}
+    #ls -l ${outfilelist}
 done
 
 ##     #===============================

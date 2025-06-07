@@ -23,17 +23,25 @@ tunits = 'hourly'
 # read taiesm dataset
 fdir  = '/data/C.shaoyu/TaiESM/archive/'
 exp   = 'f02.F2000.hindcast'
+exp   = 'f02.F2000.hindcast_SSTp3k'
 reg   = lonb+latb+[850, 850]
 esm   =  utaiesm.TaiESMRetriever(fdir, exp, reg, iens=0)
 
 ## 
+tcpath=f'/data/C.shaoyu/ESM2025/data/TC_OUTPUT/{esm.EXP}/TC.nc'
+nctc = Dataset(tcpath, 'r')
 for it in range(nt):
     nowtime = stime+timedelta(hours=it)
     print(it, nowtime)
+
     tseries_esm,  data_u = esm.get_data(nt=1, var='U850', mean=None, stime=nowtime)
     tseries_esm,  data_v = esm.get_data(nt=1, var='V850', mean=None, stime=nowtime)
     tseries_esm,  data_pr = esm.get_data(nt=1, var='PRECT', mean=None, stime=nowtime)
-    data_pr *= 3600.
+    data_pr *= 3600.*1000.
+    tc_mask = nctc.variables['TC'][it,\
+                        esm._SUBIDX[2]:esm._SUBIDX[3],\
+                        esm._SUBIDX[0]:esm._SUBIDX[1]]
+    tc_mask = np.where(tc_mask>0,1,0)
 
     # read data
     dx = (esm.LON[1] - esm.LON[0])*111000.
@@ -57,12 +65,18 @@ for it in range(nt):
                width=0.002, headwidth=3,
                color='b', transform=proj,
               )
-    
-    bounds, norm, cmap = ptools.get_cmap_of_pcp(bounds=[0.1, 0.5, 1, 2, 5])
-    data = np.where(data_pr>=bounds[0], data_pr, np.nan)
-    PC = ax.pcolormesh(esm.LON, esm.LAT, data, 
-                       norm=norm, cmap=cmap, transform=proj,alpha=0.7)
-    plt.colorbar(PC, cax1)
+   
+    #bounds, norm, cmap = ptools.get_cmap_of_pcp(bounds=[1, 3, 5, 10, 20])
+    #data = np.where(data_pr>=bounds[0], data_pr, np.nan)
+    #PC = ax.pcolormesh(esm.LON, esm.LAT, data, 
+    #                   norm=norm, cmap=cmap, transform=proj,alpha=0.7)
+    #plt.colorbar(PC, cax1)
+    CON = ax.contour(esm.LON, esm.LAT, data_pr, 
+                       levels=[1,3,5,10,20], colors=['k'],
+                       transform=proj,alpha=0.7)
+    cax1.set_axis_off()
+
+    CO = ax.contour(esm.LON,esm.LAT, tc_mask, levels=[0.5], transform=proj, linewidths=[3], colors=['g'])
     
     plt.sca(ax)
     datestr = nowtime.strftime('%Y%m%d_%H')

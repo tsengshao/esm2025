@@ -22,7 +22,7 @@ class PlotTools_cartopy():
             latlint = 1
         if region_str.lower()=='tropics':
             lonb=[0, 359.999]
-            latb=[-30, 30]
+            latb=[-45, 45]
             lonlint = 60
             latlint = 10
         if region_str.lower()=='nwpac':
@@ -60,6 +60,7 @@ class PlotTools_cartopy():
                               0.015,
                               ax1.get_position().height])
         self.Plot_cartopy_map(ax1)
+
         return fig, ccrs.PlateCarree(), ax1, cax0, cax1
 
     def Axe_map(self, fig, gs,

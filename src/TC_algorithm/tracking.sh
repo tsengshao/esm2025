@@ -4,6 +4,8 @@ hostdir=`pwd`/tracking/
 
 # Read cases from config.yaml
 yamlfile="config.yaml"
+yamlfile="config_p3k.yaml"
+#yamlfile="config_control.yaml"
 cases=$(awk '/cases:/ {flag=1; next} /^[[:space:]]*-/ && flag {print $2} /^[^[:space:]]/ && flag && !/cases:/ {flag=0}' ${yamlfile})
 outpath=$(awk -F': ' '/output_path:/ {print $2}' ${yamlfile})
 

@@ -26,8 +26,8 @@ def lifetime(sec, sst):
         line.extend(i for i in sec[n].split())
         t = int(line[1])
         x = np.round(float(line[14])).astype(int) - 1
-        if x >= 288:
-            x -= 288
+        if x >= sst.shape[2]:
+            x -= sst.shape[2]
         y = np.round(float(line[15])).astype(int) - 1
         if (sst[t,y,x] >= 299.15).compute():
             return TCid, life
@@ -91,7 +91,7 @@ def main(case, sstfils, path):
     return
 
 if __name__ == "__main__":
-    config = load_config()
+    config = load_config('config_p3k.yaml')
     cases = config['cases']
     case_path = config['case_path']
     output_path = config['output_path']

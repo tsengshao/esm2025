@@ -89,12 +89,21 @@ def main(idy):
     nowdate_str = nowdate.strftime('%Y-%m-%d')
 
     fname=f'{outdir}/obs_f02_{nowdate_str}.nc'
+    if os.path.exists(fname):
+        return
     times = [nowdate + timedelta(hours=i) for i in range(24)]
 
     # ----- nc -----
     ncfile = create_nc_file(fname,times,levels,lats,lons)
 
     # read u
+    ilev850 = np.argmin(np.abs(levels-850))
+    ilev300 = np.argmin(np.abs(levels-300))
+    u300 = np.zeros((24,lats.size,lons.size))
+    v300 = np.zeros((24,lats.size,lons.size))
+    u850 = np.zeros((24,lats.size,lons.size))
+    v850 = np.zeros((24,lats.size,lons.size))
+
     fdir = '/data/C.shaoyu/ESM2025/data/obs_taigrid/processing'
     for var in ['u','v','t','q']:
         out = np.zeros((24,levels.size,lats.size,lons.size))
@@ -105,8 +114,19 @@ def main(idy):
             tstr = nowtime.strftime('%Y%m%d%H')
             nc = Dataset(fdir+f'/ERA5_f02_{var}_{tstr}_hourly.nc')
             out[it,...] = nc.variables[var][0,...]
+            if var == 'u':
+                u850[it,...] = nc.variables[var][0,ilev850,...]
+                u300[it,...] = nc.variables[var][0,ilev300,...]
+            elif var == 'v':
+                v850[it,...] = nc.variables[var][0,ilev850,...]
+                v300[it,...] = nc.variables[var][0,ilev300,...]
             nc.close()
         ncvar[:] = out
+
+    _  = input_nc_var(ncfile, u850, 3, 'u850')
+    _  = input_nc_var(ncfile, u300, 3, 'u300')
+    _  = input_nc_var(ncfile, v850, 3, 'v850')
+    _  = input_nc_var(ncfile, v300, 3, 'v300')
 
     # read cwv
     fdir = '/data/C.shaoyu/ESM2025/data/obs_taigrid/processing'
@@ -128,10 +148,15 @@ def main(idy):
             nc.close()
         ncvar[:] = out
 
-    # read rain
-    fdir = '/data/C.shaoyu/ESM2025/data/obs_taigrid/wind_rain'
+    # # read rain
+    # fdir = '/data/C.shaoyu/ESM2025/data/obs_taigrid/wind_rain'
+    # tstr = nowtime.strftime('%Y-%m-%d')
+    # nc = Dataset(fdir+f'/obs_f02_{tstr}.nc')
+
+    # imerg
+    fdir = '/data/C.shaoyu/ESM2025/data/obs_taigrid/imerg'
     tstr = nowtime.strftime('%Y-%m-%d')
-    nc = Dataset(fdir+f'/obs_f02_{tstr}.nc')
+    nc = Dataset(fdir+f'/imerg_f02_{tstr}.nc')
     for var in nc.variables.keys():
         if var in ['time', 'lon', 'lat', 'level']:
             continue
@@ -160,6 +185,6 @@ def main(idy):
 # for idy in range(1):
 #     main(idy)
 # Use multiprocessing to fetch variable data in parallel
-with multiprocessing.Pool(processes=5) as pool:
+with multiprocessing.Pool(processes=7) as pool:
     results = pool.starmap(main, [(iday,) for iday in range(nday)])
 
