@@ -6,3 +6,7 @@
 *.mp4
 *.HDF5
 *.nc
+*.x
+*.mod
+*.npz
+tracking_data
