@@ -52,10 +52,29 @@ for it in range(nt):
     
     plt.close('all')
     fig, proj, ax, cax0, cax1 = ptools.create_fig(reg_str)
+
+    # ----- rainfall -----
+    # CON = ax.contourf(esm.LON, esm.LAT, data_pr, 
+    #                    levels=[1,3,5,10,20], colors=['k'],
+    #                    transform=proj,alpha=0.7)
+    # cax1.set_axis_off()
+
+    bounds, norm, cmap = ptools.get_cmap_of_pcp(bounds=[1, 3, 5, 10, 20])
+    data = np.where(data_pr>=bounds[0], data_pr, np.nan)
+    PC = ax.pcolormesh(esm.LON, esm.LAT, data, 
+                       norm=norm, cmap=cmap, transform=proj,
+                       alpha=0.5)
+    plt.colorbar(PC, cax0)
+
+    # ----- vorticity -----
     levels=[3.5, 7.9, 12.3, 16.7, 21.1, 25.5]
-    CO = ax.contourf(esm.LON,esm.LAT, data_vort*1e5, levels=levels, cmap=plt.cm.YlOrBr, extend='max', transform=proj)
-    plt.colorbar(CO, cax0)
-    
+    #levels = [5, 10, 50, 100]
+    #CO = ax.contourf(esm.LON,esm.LAT, data_vort*1e5, levels=levels, cmap=plt.cm.YlOrBr, extend='max', transform=proj)
+    #plt.colorbar(CO, cax0)
+    CO = ax.contour(esm.LON,esm.LAT, data_vort*1e5, levels=levels, colors=['k'], transform=proj, linewidths=[1])
+    cax1.set_axis_off()
+     
+    # ----- Wind -----
     skip = (slice(None, None, 5), slice(None, None, 5))
     data_mask = np.where((data_u**2+data_v**2)**0.5>=15, True, False)
     datau = np.where(data_mask, data_u, np.nan)
@@ -66,17 +85,7 @@ for it in range(nt):
                color='b', transform=proj,
               )
    
-    #bounds, norm, cmap = ptools.get_cmap_of_pcp(bounds=[1, 3, 5, 10, 20])
-    #data = np.where(data_pr>=bounds[0], data_pr, np.nan)
-    #PC = ax.pcolormesh(esm.LON, esm.LAT, data, 
-    #                   norm=norm, cmap=cmap, transform=proj,alpha=0.7)
-    #plt.colorbar(PC, cax1)
-    CON = ax.contour(esm.LON, esm.LAT, data_pr, 
-                       levels=[1,3,5,10,20], colors=['k'],
-                       transform=proj,alpha=0.7)
-    cax1.set_axis_off()
-
-    CO = ax.contour(esm.LON,esm.LAT, tc_mask, levels=[0.5], transform=proj, linewidths=[3], colors=['g'])
+    CO = ax.contour(esm.LON,esm.LAT, tc_mask, levels=[0.5], transform=proj, linewidths=[3], colors=[(1,0,0)])
     
     plt.sca(ax)
     datestr = nowtime.strftime('%Y%m%d_%H')
