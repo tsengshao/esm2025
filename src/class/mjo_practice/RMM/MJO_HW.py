@@ -457,6 +457,7 @@ for i, ax in enumerate(axs):
 plt.suptitle("MJO RMM Index", fontsize=20, y=1.005)
 plt.tight_layout()
 # plt.savefig("/data92/PeterChang/ESM_2025/Figures/result.png", dpi=300., bbox_inches='tight')
+plt.savefig('MJO_RMM_INDEX_all.png')
 plt.show()
 
 
@@ -574,4 +575,5 @@ cb.set_label("[$\degree$C]", fontsize=12)
 
 # Add plot title
 ax.set_title("Initial SST (Pacific Centered)", fontsize=16)
+plt.savefig('rmm.png')
 
