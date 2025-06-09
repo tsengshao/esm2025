@@ -26,15 +26,14 @@ from matplotlib.colors import TwoSlopeNorm
 # We are using FLNT (proxy for OLR), U850, and coordinates from TaiESM model output.
 
 # In[2]:
-
-
-with Dataset("f09.F2000_MJO_1year.cam.h0.subset_MJO_vars.nc") as f:
+fname='f09.F2000_MJO_1year.cam.h0.subset_MJO_vars.nc'
+exp='1year'
+with Dataset(fname) as f:
     Q = f["FLNT"][:]
     u850 = f["U850"][:]
     lat = f["lat"][:]
     lon = f["lon"][:]
     time = f["time"][:]
-
 
 # ## 🎚️ Step 3: Remove seasonal cycle and apply bandpass filter
 # These helper functions are provided. Please review their structure.
@@ -155,8 +154,8 @@ def lagged_regression_against_reference(Q, ref_series, lags=np.arange(-20, 21)):
         t_lag = t + lag
         valid = (t_lag >= 0) & (t_lag < nt)
 
-        x = ref_series[...] # ← 請填入 t_lag[valid] 或 t[valid] 中的哪一個？
-        y = Q[...]          # ← 請填入 t_lag[valid] 或 t[valid] 中的哪一個？
+        x = ref_series[t_lag[valid]] # ← 請填入 t_lag[valid] 或 t[valid] 中的哪一個？
+        y = Q[t[valid]]          # ← 請填入 t_lag[valid] 或 t[valid] 中的哪一個？
 
         cov = np.mean(x[:, None] * y, axis=0)
         var = np.mean(x ** 2)
@@ -194,12 +193,11 @@ cf = ax.contourf(
 ax.axhline(0, color='k', linestyle='--')
 ax.set_xlabel("Longitude (°E)", fontsize=14)
 ax.set_ylabel("Lag (days)", fontsize=14)
-ax.set_title("TaiESM OLR lag regression", fontsize=18)
+ax.set_title(f"TaiESM OLR lag regression {exp}", fontsize=18)
 ax.tick_params(axis='both', labelsize=14, direction='out', length=6)
 cbar = fig.colorbar(cf, ax=ax, label="Regression Coefficient", pad=0.01)
 plt.tight_layout()
-plt.show()
-
+plt.savefig(f'olr_hov_{exp}.png')
 
 
 
